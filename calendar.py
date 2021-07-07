@@ -1,7 +1,11 @@
 from datetime import *
 
 
-def dia_da_semana(x):
+def format_calendar():
+    return [[0 for i in range(7)] for j in range(6)]
+
+
+def day_of_week(x):
     return {
         0: 1,
         1: 2,
@@ -13,7 +17,7 @@ def dia_da_semana(x):
     }[x]
 
 
-def mes(x):
+def month(x):
     return {
         1: "Janeiro",
         2: "Fevereiro",
@@ -30,34 +34,46 @@ def mes(x):
     }[x]
 
 
-lista = [[0 for i in range(7)] for j in range(6)]
+def first_day_of_the_month(day):
+    return day.replace(day=1)
 
-data_atual = date.today()
 
-while True:
-    try:
-        data_atual = data_atual.replace(day=1)
-        dia = data_atual
+def first_day_first_week(day):
+    first = day
 
-        while dia_da_semana(data_atual.weekday()) != 0:
-            data_atual -= timedelta(days=1)
+    while day_of_week(first.weekday()) != 0:
+        first -= timedelta(days=1)
 
-        for i in range(6):
-            for j in range(7):
-                lista[i][j] = data_atual.strftime('%d')
-                data_atual += timedelta(days=1)
+    return first
 
-        print(f"{mes(dia.month)} - {dia.year}")
-        for line in lista:
-            print(line)
 
-        usr = input("p or n:\n")
-        if usr == "p":
-            data_atual = dia.replace(day=1) - timedelta(days=1)
-            data_atual.replace(day=1)
-        elif usr == "n":
-            data_atual = dia.replace(day=1) + timedelta(days=32)
-            data_atual.replace(day=1)
+def calendar_page(days, first):
+    for weeks in range(6):
+        for day in range(7):
+            days[weeks][day] = first.strftime('%d')
+            first += timedelta(days=1)
 
-    except IOError:
-        break
+    return days
+
+
+def header(day):
+    return f"{month(day.month)} - {day.year}"
+
+
+def main():
+    calendar = format_calendar()
+
+    today = date.today()
+    today = first_day_of_the_month(today)
+
+    first = first_day_first_week(today)
+
+    calendar = calendar_page(calendar, first)
+
+    print(header(today))
+    for line in calendar:
+        print(line)
+
+
+if __name__ == '__main__':
+    main()
